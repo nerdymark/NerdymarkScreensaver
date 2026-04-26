@@ -107,7 +107,7 @@ open "$HOME/Library/Developer/Xcode/DerivedData/NerdymarkScreenSaver/dist/Nerdym
 
 ## Project layout
 
-```
+```text
 screensavers/
 ├── project.yml                              xcodegen spec → generates .xcodeproj
 ├── build.sh                                 sign / notarize / DMG pipeline
@@ -127,7 +127,7 @@ screensavers/
 
 ## Distribution
 
-Distributed as a notarized DMG from <https://nerdymark.com/screensavers>. Not on the Mac App Store (Apple employees' personal projects ship from their own sites by policy).
+Distributed as a notarized DMG from <https://nerdymark.com/screensavers>.
 
 ## License
 
