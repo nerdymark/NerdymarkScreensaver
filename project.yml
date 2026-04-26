@@ -1,0 +1,78 @@
+name: NerdymarkScreenSaver
+options:
+  bundleIdPrefix: com.nerdymark
+  deploymentTarget:
+    macOS: "11.0"
+  createIntermediateGroups: true
+configs:
+  Release: release
+  Debug: debug
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "11.0"
+    SWIFT_VERSION: "5.0"
+    # Universal binary — Apple Silicon + Intel
+    ARCHS: "$(ARCHS_STANDARD)"
+    ONLY_ACTIVE_ARCH: NO
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_STYLE: Manual
+    # Set DEVELOPMENT_TEAM and CODE_SIGN_IDENTITY via build.sh so the
+    # project file doesn't encode personal signing info.
+
+targets:
+  NerdymarkScreenSaver:
+    type: bundle
+    platform: macOS
+    sources:
+      - path: Sources/NerdymarkScreenSaver
+        excludes:
+          - "Info.plist"
+    info:
+      path: Sources/NerdymarkScreenSaver/Info.plist
+      properties:
+        CFBundleDisplayName: nerdymark Demoscene
+        CFBundleExecutable: $(EXECUTABLE_NAME)
+        CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleName: $(PRODUCT_NAME)
+        CFBundlePackageType: BNDL
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        LSMinimumSystemVersion: "11.0"
+        NSHumanReadableCopyright: "Copyright © 2026 Mark LaCore. MIT Licensed."
+        NSPrincipalClass: NerdymarkScreenSaverView
+    dependencies:
+      - sdk: ScreenSaver.framework
+    settings:
+      base:
+        PRODUCT_NAME: NerdymarkScreenSaver
+        PRODUCT_BUNDLE_IDENTIFIER: com.nerdymark.screensaver
+        WRAPPER_EXTENSION: saver
+        INFOPLIST_FILE: Sources/NerdymarkScreenSaver/Info.plist
+        # MH_BUNDLE, not a dynamic library — ScreenSaverEngine loads it.
+        MACH_O_TYPE: mh_bundle
+        # --timestamp uses Apple's secure-timestamp server, required for notarization.
+        # Without it xcodebuild passes --timestamp=none and the notary rejects the binary.
+        OTHER_CODE_SIGN_FLAGS: --timestamp
+
+  # Windowed dev wrapper so we can take screenshots / iterate on scenes without
+  # going through ScreenSaverEngine. Re-uses every Scenes/* file plus its own
+  # tiny app/view/settings shims. Not signed for distribution — local-only.
+  NerdymarkScreenSaverDemo:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/NerdymarkScreenSaver/Scenes
+      - path: Sources/NerdymarkScreenSaverDemo
+        excludes:
+          - "Info.plist"
+    info:
+      path: Sources/NerdymarkScreenSaverDemo/Info.plist
+    settings:
+      base:
+        PRODUCT_NAME: NerdymarkScreenSaverDemo
+        PRODUCT_BUNDLE_IDENTIFIER: com.nerdymark.screensaver.demo
+        INFOPLIST_FILE: Sources/NerdymarkScreenSaverDemo/Info.plist
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_HARDENED_RUNTIME: NO
